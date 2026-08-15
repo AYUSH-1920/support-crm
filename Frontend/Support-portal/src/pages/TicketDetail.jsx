@@ -12,6 +12,9 @@ function TicketDetail() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState("")
 
+  const [confirmModal, setConfirmModal] = useState(null)
+  // confirmModal will hold: { title, description, confirmLabel, onConfirm } or null
+
   const loadTicket = () => {
     fetch(`${import.meta.env.VITE_API_URL}/api/tickets/${ticket_id}`)
       .then((response) => response.json())
@@ -28,17 +31,11 @@ function TicketDetail() {
     loadTicket()
   }, [ticket_id])
 
-  const handleUpdate = () => {
-
-    if (status === "Closed") {
-      const confirmed = window.confirm(
-        "Are you sure you want to close this ticket? Once closed, it cannot be edited further."
-      )
-      if (!confirmed) return
-    }
+  const performUpdate = () => {
 
     setSaving(true)
     setMessage("")
+    setConfirmModal(null)
 
     fetch(`${import.meta.env.VITE_API_URL}/api/tickets/${ticket_id}`, {
       method: "PUT",
@@ -63,11 +60,24 @@ function TicketDetail() {
       })
   }
 
-  const handleDelete = () => {
+  const handleUpdate = () => {
 
-    const confirmed = window.confirm("Delete this ticket? This cannot be undone.")
+    if (status === "Closed") {
+      setConfirmModal({
+        title: "Close this ticket?",
+        description: "Once closed, this ticket can no longer be edited.",
+        confirmLabel: "Close Ticket",
+        onConfirm: performUpdate
+      })
+      return
+    }
 
-    if (!confirmed) return
+    performUpdate()
+  }
+
+  const performDelete = () => {
+
+    setConfirmModal(null)
 
     fetch(`${import.meta.env.VITE_API_URL}/api/tickets/${ticket_id}`, {
       method: "DELETE"
@@ -79,6 +89,15 @@ function TicketDetail() {
       .catch((error) => {
         console.error("Error deleting ticket:", error)
       })
+  }
+
+  const handleDelete = () => {
+    setConfirmModal({
+      title: "Delete this ticket?",
+      description: "This action cannot be undone.",
+      confirmLabel: "Delete Ticket",
+      onConfirm: performDelete
+    })
   }
 
   if (!ticket) {
@@ -215,6 +234,40 @@ function TicketDetail() {
         </div>
 
       </main>
+
+      {confirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
+
+            <h3 className="text-base font-semibold text-slate-900">
+              {confirmModal.title}
+            </h3>
+
+            <p className="mt-2 text-sm text-slate-500">
+              {confirmModal.description}
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+
+              <button
+                onClick={() => setConfirmModal(null)}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmModal.onConfirm}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+              >
+                {confirmModal.confirmLabel}
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   )
