@@ -30,6 +30,13 @@ function TicketDetail() {
 
   const handleUpdate = () => {
 
+    if (status === "Closed") {
+      const confirmed = window.confirm(
+        "Are you sure you want to close this ticket? Once closed, it cannot be edited further."
+      )
+      if (!confirmed) return
+    }
+
     setSaving(true)
     setMessage("")
 
@@ -82,6 +89,8 @@ function TicketDetail() {
     )
   }
 
+  const isClosed = ticket.status === "Closed"
+
   return (
     <div className="min-h-screen bg-slate-50">
 
@@ -109,53 +118,69 @@ function TicketDetail() {
             {ticket.description}
           </p>
 
-          <div className="mt-6 border-t border-slate-100 pt-4">
+          {isClosed ? (
 
-            <label className="text-xs font-semibold text-slate-500">
-              Status
-            </label>
+            <div className="mt-6 border-t border-slate-100 pt-4">
+              <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+                <p className="text-sm font-medium text-slate-600">
+                  This ticket is closed and can no longer be updated.
+                </p>
+              </div>
+            </div>
 
-            <select
-              value={status}
-              onChange={(event) => setStatus(event.target.value)}
-              className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-slate-400"
-            >
-              <option value="Open">Open</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Closed">Closed</option>
-            </select>
+          ) : (
 
-          </div>
+            <>
+              <div className="mt-6 border-t border-slate-100 pt-4">
 
-          <div className="mt-4">
+                <label className="text-xs font-semibold text-slate-500">
+                  Status
+                </label>
 
-            <label className="text-xs font-semibold text-slate-500">
-              Add a note
-            </label>
+                <select
+                  value={status}
+                  onChange={(event) => setStatus(event.target.value)}
+                  className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-slate-400"
+                >
+                  <option value="Open">Open</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Closed">Closed</option>
+                </select>
 
-            <textarea
-              value={noteText}
-              onChange={(event) => setNoteText(event.target.value)}
-              rows={3}
-              className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-slate-400"
-              placeholder="Write a note..."
-            />
+              </div>
 
-          </div>
+              <div className="mt-4">
 
-          {message && (
-            <p className={`mt-3 text-sm ${message.includes("successfully") ? "text-emerald-600" : "text-red-600"}`}>
-              {message}
-            </p>
+                <label className="text-xs font-semibold text-slate-500">
+                  Add a note
+                </label>
+
+                <textarea
+                  value={noteText}
+                  onChange={(event) => setNoteText(event.target.value)}
+                  rows={3}
+                  className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-slate-400"
+                  placeholder="Write a note..."
+                />
+
+              </div>
+
+              {message && (
+                <p className={`mt-3 text-sm ${message.includes("successfully") ? "text-emerald-600" : "text-red-600"}`}>
+                  {message}
+                </p>
+              )}
+
+              <button
+                onClick={handleUpdate}
+                disabled={saving}
+                className="mt-4 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Update Ticket"}
+              </button>
+            </>
+
           )}
-
-          <button
-            onClick={handleUpdate}
-            disabled={saving}
-            className="mt-4 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-          >
-            {saving ? "Saving..." : "Update Ticket"}
-          </button>
 
           <button
             onClick={handleDelete}
