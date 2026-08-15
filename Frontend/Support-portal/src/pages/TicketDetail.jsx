@@ -13,7 +13,7 @@ function TicketDetail() {
   const [message, setMessage] = useState("")
 
   const loadTicket = () => {
-    fetch(`http://localhost:5000/api/tickets/${ticket_id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/tickets/${ticket_id}`)
       .then((response) => response.json())
       .then((data) => {
         setTicket(data)
@@ -33,7 +33,7 @@ function TicketDetail() {
     setSaving(true)
     setMessage("")
 
-    fetch(`http://localhost:5000/api/tickets/${ticket_id}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/tickets/${ticket_id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -62,7 +62,7 @@ function TicketDetail() {
 
     if (!confirmed) return
 
-    fetch(`http://localhost:5000/api/tickets/${ticket_id}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/tickets/${ticket_id}`, {
       method: "DELETE"
     })
       .then((response) => response.json())

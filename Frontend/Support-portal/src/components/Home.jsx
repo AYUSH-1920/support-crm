@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import Navbar from "../components/Navbar"
 import SearchBar from "../components/SearchBar"
-import StatusFilter from "../components/StatusFilter"
+import StatusFilter from "../components/Statusfilter"
 import TicketList from "../components/TicketList"
 
 function Home() {
@@ -26,7 +26,7 @@ function Home() {
 
   const queryString = params.toString()
 
-  const url = `http://localhost:5000/api/tickets${
+  const url = `${import.meta.env.VITE_API_URL}/api/tickets${
     queryString ? `?${queryString}` : ""
   }`
 
